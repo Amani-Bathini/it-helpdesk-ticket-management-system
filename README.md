@@ -2,6 +2,22 @@
 
 An Enterprise Ticket Management & SQL-Driven Support Intelligence Platform built with **Python OOP, MySQL, SQLAlchemy, Streamlit, and Plotly**.
 
+## My Contribution
+
+I worked as a team member on the IT Helpdesk & Ticket Management System, focusing on **Ticket Management, SLA (Service Level Agreement) handling, and Support Operations**.
+
+My responsibilities included:
+- Implementing ticket lifecycle operations, including ticket creation, assignment, status updates, resolution, and closure.
+- Working on ticket status transitions and validation.
+- Handling SLA-related operations and tracking ticket deadlines.
+- Implementing ticket filtering and search based on status, priority, department, assigned agent, and other criteria.
+- Maintaining ticket history and supporting ticket activity tracking.
+
+### Technologies Used
+Python, MySQL, Streamlit, SQLAlchemy, Pandas, Git, and GitHub.
+
+*This was a collaborative project developed by a team of four members.*
+
 ---
 
 ## 👥 4-Member Project Division & Status
