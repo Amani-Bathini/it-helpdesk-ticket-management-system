@@ -2,6 +2,7 @@
 
 import streamlit as st
 import pandas as pd
+import config
 from datetime import datetime
 from core.repositories import TicketRepository, DepartmentRepository, AgentRepository, SLARepository
 from core.database import db
@@ -14,18 +15,6 @@ from dashboard.charts import (
     create_csat_gauge, create_csat_breakdown_bar
 )
 from analytics.reports import ReportGenerator
-from analytics.sql_queries import (
-    SQLQueryManager,
-    QUERY_DEPARTMENT_SUMMARY,
-    QUERY_PROBLEMATIC_DEPARTMENTS_HAVING,
-    QUERY_AGENT_PERFORMANCE_WINDOW,
-    QUERY_WORKLOAD_ANALYSIS_CTE,
-    QUERY_CORRELATED_SUBQUERY_LONGER_THAN_DEPT,
-    QUERY_MONTHLY_CUMULATIVE_WINDOW,
-    QUERY_RECURRING_PROBLEMS,
-    QUERY_REOPENED_TICKETS_AUDIT,
-    QUERY_SLA_BREACH_DRILLDOWN
-)
 from tickets.ticket_assignment import TicketAssignmentManager
 
 def render_admin_dashboard():
@@ -121,12 +110,11 @@ def render_admin_dashboard():
 
     st.divider()
 
-    # Tabs for analytics vs management views vs SQL Intelligence vs Exports
-    tab_analytics, tab_agents, tab_sla, tab_sql, tab_export = st.tabs([
+    # Tabs for analytics vs management views vs Exports
+    tab_analytics, tab_agents, tab_sla, tab_export = st.tabs([
         "📈 Operational Analytics",
         "👥 Agent Leaderboard",
         "🚨 SLA Breach Monitor",
-        "🔬 Deep SQL Intelligence",
         "📥 Export & Executive PDF"
     ])
 
@@ -215,54 +203,7 @@ def render_admin_dashboard():
                 hide_index=True
             )
 
-    with tab_sql:
-        st.markdown("#### 🔬 Enterprise SQL Intelligence & Query Catalog")
-        st.caption("Execute advanced SQL queries (CTEs, Window Functions, HAVING, Correlated Subqueries) directly against the database engine.")
 
-        queries_catalog = {
-            "🏆 Agent Performance (DENSE_RANK Window Function)": (
-                QUERY_AGENT_PERFORMANCE_WINDOW, {},
-                "Calculates dense performance ranks across agents by resolution volume and SLA compliance rate."
-            ),
-            "⚖️ Workload Capacity & Team Benchmarks (Multi-Stage CTE)": (
-                QUERY_WORKLOAD_ANALYSIS_CTE, {},
-                "Evaluates individual agent load vs. team average using Common Table Expressions."
-            ),
-            "🏢 Problematic Departments (GROUP BY & HAVING)": (
-                QUERY_PROBLEMATIC_DEPARTMENTS_HAVING, {"min_count": 1, "min_hours": 0.5},
-                "Identifies departments with high incident rates and prolonged resolution cycles."
-            ),
-            "🔄 Recurring Technical Hotspots & Reopened Issues": (
-                QUERY_RECURRING_PROBLEMS, {},
-                "Groups problem frequencies and repeat reopenings to isolate root causes."
-            ),
-            "📈 Cumulative Monthly Trajectory (Running Total Window)": (
-                QUERY_MONTHLY_CUMULATIVE_WINDOW, {},
-                "Computes unbounded preceding rolling cumulative ticket counts and resolution throughput."
-            ),
-            "⏱️ Department Outlier Resolution Anomalies (Correlated Subquery)": (
-                QUERY_CORRELATED_SUBQUERY_LONGER_THAN_DEPT, {},
-                "Identifies tickets taking significantly longer than the department's baseline average."
-            )
-        }
-
-        selected_query_title = st.selectbox("Select Analytical SQL Query", list(queries_catalog.keys()))
-        sql_text, sql_params, explanation = queries_catalog[selected_query_title]
-
-        st.info(f"💡 **Analysis Goal:** {explanation}")
-
-        with st.expander("📝 View Raw SQL Query Statement", expanded=False):
-            st.code(sql_text, language="sql")
-
-        try:
-            query_results_df = SQLQueryManager.run_query_df(sql_text, sql_params)
-            if not query_results_df.empty:
-                st.markdown(f"**Execution Output ({len(query_results_df)} records returned):**")
-                st.dataframe(query_results_df, use_container_width=True)
-            else:
-                st.warning("Query executed successfully, but no matching rows were returned.")
-        except Exception as sql_err:
-            st.error(f"SQL Execution Error: {sql_err}")
 
     with tab_export:
         st.markdown("#### 📥 Export Operational Reports & Executive PDF")
